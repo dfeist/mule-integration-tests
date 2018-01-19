@@ -29,7 +29,7 @@
     <muleSchedulerServiceTestVersion>1.1.0-DRY-RUN</muleSchedulerServiceTestVersion>
     <muleHttpServiceTestVersion>1.1.0-DRY-RUN</muleHttpServiceTestVersion>
     <muleOAuthServiceTestVersion>1.1.0-DRY-RUN</muleOAuthServiceTestVersion>
-    <muleSoapServiceTestVersion>1.1.0-SNAPSHOT</muleSoapServiceTestVersion>
+    <muleSoapServiceTestVersion>1.1.0-DRY-RUN</muleSoapServiceTestVersion>
     <muleExtensionTestSoapTestVersion>1.1.0-SNAPSHOT</muleExtensionTestSoapTestVersion>
 
     <muleSpringModuleTestVersion>1.1.0-SNAPSHOT</muleSpringModuleTestVersion>
