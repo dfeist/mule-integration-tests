@@ -45,7 +45,7 @@
     <muleDbConnectorTestVersion>1.1.0-DRY-RUN</muleDbConnectorTestVersion>
     <muleFtpConnectorTestVersion>1.1.0-DRY-RUN</muleFtpConnectorTestVersion>
     <muleFileConnectorTestVersion>1.1.0-DRY-RUN</muleFileConnectorTestVersion>
-    <muleJmsConnectorTestVersion>1.1.0-SNAPSHOT</muleJmsConnectorTestVersion>
+    <muleJmsConnectorTestVersion>1.1.0-DRY-RUN</muleJmsConnectorTestVersion>
     <muleWscConnectorTestVersion>1.1.0-SNAPSHOT</muleWscConnectorTestVersion>
     <muleOauthModuleTestVersion>1.1.0-DRY-RUN</muleOauthModuleTestVersion>
     <muleSocketsConnectorTestVersion>1.1.0-DRY-RUN</muleSocketsConnectorTestVersion>
