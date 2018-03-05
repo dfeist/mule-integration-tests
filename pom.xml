@@ -38,13 +38,13 @@
     <muleFileCommonsTestVersion>1.1.1-DRY-RUN</muleFileCommonsTestVersion>
     
     <muleHttpConnectorTestVersion>1.1.1-DRY-RUN</muleHttpConnectorTestVersion>
-    <muleFileConnectorTestVersion>1.1.2-SNAPSHOT</muleFileConnectorTestVersion>
+    <muleFileConnectorTestVersion>1.1.1-DRY-RUN</muleFileConnectorTestVersion>
     <muleObjectStoreConnectorTestVersion>1.1.1-SNAPSHOT</muleObjectStoreConnectorTestVersion>
     <muleJavaModuleTestVersion>1.0.1-DRY-RUN</muleJavaModuleTestVersion>
     <muleAggregatorsModuleTestVersion>1.0.0-DRY-RUN</muleAggregatorsModuleTestVersion>
     <muleDbConnectorTestVersion>1.2.0-DRY-RUN</muleDbConnectorTestVersion>
     <muleFtpConnectorTestVersion>1.1.1-SNAPSHOT</muleFtpConnectorTestVersion>
-    <muleFileConnectorTestVersion>1.1.2-SNAPSHOT</muleFileConnectorTestVersion>
+    <muleFileConnectorTestVersion>1.1.1-DRY-RUN</muleFileConnectorTestVersion>
     <muleJmsConnectorTestVersion>1.1.1-SNAPSHOT</muleJmsConnectorTestVersion>
     <muleWscConnectorTestVersion>1.1.1-SNAPSHOT</muleWscConnectorTestVersion>
     <muleOauthModuleTestVersion>1.1.1-DRY-RUN</muleOauthModuleTestVersion>
