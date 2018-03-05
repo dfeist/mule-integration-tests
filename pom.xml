@@ -34,7 +34,7 @@
 
     <muleSpringModuleTestVersion>1.1.1-SNAPSHOT</muleSpringModuleTestVersion>
     <muleValidationModuleTestVersion>1.1.1-DRY-RUN</muleValidationModuleTestVersion>
-    <muleScriptingModuleTestVersion>1.1.1-SNAPSHOT</muleScriptingModuleTestVersion>
+    <muleScriptingModuleTestVersion>1.1.1-DRY-RUN</muleScriptingModuleTestVersion>
     <muleFileCommonsTestVersion>1.1.1-DRY-RUN</muleFileCommonsTestVersion>
     
     <muleHttpConnectorTestVersion>1.1.1-SNAPSHOT</muleHttpConnectorTestVersion>
