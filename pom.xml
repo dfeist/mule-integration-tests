@@ -32,7 +32,7 @@
     <muleSoapServiceTestVersion>1.1.1-DRY-RUN</muleSoapServiceTestVersion>
     <muleExtensionTestSoapTestVersion>1.1.1-SNAPSHOT</muleExtensionTestSoapTestVersion>
 
-    <muleSpringModuleTestVersion>1.1.1-SNAPSHOT</muleSpringModuleTestVersion>
+    <muleSpringModuleTestVersion>1.1.1-DRY-RUN</muleSpringModuleTestVersion>
     <muleValidationModuleTestVersion>1.1.1-DRY-RUN</muleValidationModuleTestVersion>
     <muleScriptingModuleTestVersion>1.1.1-DRY-RUN</muleScriptingModuleTestVersion>
     <muleFileCommonsTestVersion>1.1.1-DRY-RUN</muleFileCommonsTestVersion>
