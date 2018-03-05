@@ -39,7 +39,7 @@
     
     <muleHttpConnectorTestVersion>1.1.1-DRY-RUN</muleHttpConnectorTestVersion>
     <muleFileConnectorTestVersion>1.1.1-DRY-RUN</muleFileConnectorTestVersion>
-    <muleObjectStoreConnectorTestVersion>1.1.1-SNAPSHOT</muleObjectStoreConnectorTestVersion>
+    <muleObjectStoreConnectorTestVersion>1.1.1-DRY-RUN</muleObjectStoreConnectorTestVersion>
     <muleJavaModuleTestVersion>1.0.1-DRY-RUN</muleJavaModuleTestVersion>
     <muleAggregatorsModuleTestVersion>1.0.0-DRY-RUN</muleAggregatorsModuleTestVersion>
     <muleDbConnectorTestVersion>1.2.0-DRY-RUN</muleDbConnectorTestVersion>
