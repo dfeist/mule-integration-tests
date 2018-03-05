@@ -28,7 +28,7 @@
   <properties>
     <muleSchedulerServiceTestVersion>1.1.1-DRY-RUN</muleSchedulerServiceTestVersion>
     <muleHttpServiceTestVersion>1.1.1-DRY-RUN</muleHttpServiceTestVersion>
-    <muleOAuthServiceTestVersion>1.1.1-SNAPSHOT</muleOAuthServiceTestVersion>
+    <muleOAuthServiceTestVersion>1.1.1-DRY-RUN</muleOAuthServiceTestVersion>
     <muleSoapServiceTestVersion>1.1.2-SNAPSHOT</muleSoapServiceTestVersion>
     <muleExtensionTestSoapTestVersion>1.1.1-SNAPSHOT</muleExtensionTestSoapTestVersion>
 
