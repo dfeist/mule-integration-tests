@@ -9,6 +9,7 @@ package org.mule.test.integration.interception;
 import static java.lang.Math.random;
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.endsWith;
@@ -17,6 +18,7 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.core.IsCollectionContaining.hasItem;
 import static org.junit.Assert.assertThat;
 import static org.mule.functional.api.exception.ExpectedError.none;
 import static org.mule.runtime.api.interception.ProcessorInterceptorFactory.INTERCEPTORS_ORDER_REGISTRY_KEY;
@@ -73,6 +75,8 @@ import io.qameta.allure.Story;
 @Story(COMPONENT_INTERCEPTION_STORY)
 public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTestCase {
 
+  protected static final String CPU_LIGHT = "cpuLight";
+
   @Rule
   public ExpectedError expectedError = none();
 
@@ -88,9 +92,11 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     objects.put("_AfterWithCallbackInterceptorFactory", new AfterWithCallbackInterceptorFactory());
     objects.put("_HasInjectedAttributesInterceptorFactory", new HasInjectedAttributesInterceptorFactory(false));
     objects.put("_EvaluatesExpressionInterceptorFactory", new EvaluatesExpressionInterceptorFactory());
+    objects.put("_ThreadTrackingInterceptorFactory", new ThreadTrackingInterceptorFactory());
 
     objects.put(INTERCEPTORS_ORDER_REGISTRY_KEY,
-                (ProcessorInterceptorOrder) () -> asList(AfterWithCallbackInterceptorFactory.class.getName(),
+                (ProcessorInterceptorOrder) () -> asList(ThreadTrackingInterceptorFactory.class.getName(),
+                                                         AfterWithCallbackInterceptorFactory.class.getName(),
                                                          HasInjectedAttributesInterceptorFactory.class.getName(),
                                                          EvaluatesExpressionInterceptorFactory.class.getName()));
 
@@ -103,6 +109,7 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     HasInjectedAttributesInterceptor.interceptionParameters.clear();
     AfterWithCallbackInterceptor.callback = (event, thrown) -> {
     };
+    ThreadTrackingInterceptor.clear();
   }
 
   @Description("Logger, flow-ref and splitter components are intercepted in order and the parameters are correctly sent")
@@ -509,6 +516,26 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     }
   }
 
+  @Test
+  @Description("Ensure that interceptor before and after methods run on a Flow CPU_LITE thread.")
+  public void interceptorThread() throws Exception {
+    List<Object> payload = new ArrayList<>();
+    flowRunner("interceptorThread").withPayload(payload).run();
+
+    assertThat(ThreadTrackingInterceptor.beforeThread.getName(), containsString(CPU_LIGHT));
+    assertThat(ThreadTrackingInterceptor.afterThread.getName(), containsString(CPU_LIGHT));
+  }
+
+  @Test
+  @Description("Ensure that interceptor before and after methods run on a Flow CPU_LITE thread, even when a non-blocking component returns using a custom thread pool.")
+  public void interceptorThreadNonBlocking() throws Exception {
+    List<Object> payload = new ArrayList<>();
+    flowRunner("interceptorThreadNonBlocking").withPayload(payload).run();
+
+    assertThat(ThreadTrackingInterceptor.beforeThread.getName(), containsString(CPU_LIGHT));
+    assertThat(ThreadTrackingInterceptor.afterThread.getName(), containsString(CPU_LIGHT));
+  }
+
   public static class HasInjectedAttributesInterceptorFactory implements ProcessorInterceptorFactory {
 
     @Inject
@@ -670,6 +697,35 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     @Override
     public void after(ComponentLocation location, InterceptionEvent event, Optional<Throwable> thrown) {
       callback.accept(event, thrown);
+    }
+  }
+
+  public static class ThreadTrackingInterceptorFactory implements ProcessorInterceptorFactory {
+
+    @Override
+    public ProcessorInterceptor get() {
+      return new ThreadTrackingInterceptor();
+    }
+  }
+
+  public static class ThreadTrackingInterceptor implements ProcessorInterceptor {
+
+    static Thread beforeThread;
+    static Thread afterThread;
+
+    @Override
+    public void before(ComponentLocation location, Map<String, ProcessorParameterValue> parameters, InterceptionEvent event) {
+      beforeThread = Thread.currentThread();
+    }
+
+    @Override
+    public void after(ComponentLocation location, InterceptionEvent event, Optional<Throwable> thrown) {
+      afterThread = Thread.currentThread();
+    }
+
+    public static void clear() {
+      beforeThread = null;
+      afterThread = null;
     }
   }
 

@@ -130,4 +130,12 @@
         <test:processor throwException="true"/>
     </sub-flow>
 
+    <flow name="interceptorThread">
+        <test:processor/>
+    </flow>
+
+    <flow name="interceptorThreadNonBlocking">
+        <test:non-blocking-processor/>
+    </flow>
+
 </mule>
