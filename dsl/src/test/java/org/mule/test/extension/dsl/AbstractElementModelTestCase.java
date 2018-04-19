@@ -13,28 +13,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mule.runtime.api.component.ComponentIdentifier.builder;
 import static org.mule.runtime.config.api.XmlConfigurationDocumentLoader.schemaValidatingDocumentLoader;
-import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
-import org.mule.runtime.api.component.ComponentIdentifier;
-import org.mule.runtime.api.dsl.DslResolvingContext;
-import org.mule.runtime.api.meta.NamedObject;
-import org.mule.runtime.api.meta.model.ExtensionModel;
-import org.mule.runtime.api.meta.model.parameter.ParameterizedModel;
-import org.mule.runtime.app.declaration.api.ArtifactDeclaration;
-import org.mule.runtime.app.declaration.api.ElementDeclaration;
-import org.mule.runtime.config.internal.model.ApplicationModel;
-import org.mule.runtime.config.api.dsl.model.DslElementModel;
-import org.mule.runtime.config.api.dsl.model.DslElementModelFactory;
-import org.mule.runtime.config.api.dsl.processor.ArtifactConfig;
-import org.mule.runtime.config.api.dsl.processor.ConfigFile;
-import org.mule.runtime.config.api.dsl.processor.ConfigLine;
-import org.mule.runtime.config.api.dsl.processor.xml.XmlApplicationParser;
-import org.mule.runtime.config.api.dsl.processor.xml.XmlApplicationServiceRegistry;
-import org.mule.runtime.core.api.extension.MuleExtensionModelProvider;
-import org.mule.runtime.core.api.registry.SpiServiceRegistry;
-import org.mule.runtime.dsl.api.component.config.ComponentConfiguration;
-import org.mule.test.runner.ArtifactClassLoaderRunnerConfig;
-
-import com.google.common.collect.ImmutableSet;
 
 import java.io.InputStream;
 import java.io.StringWriter;
@@ -51,8 +29,33 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.junit.Before;
+
+import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
+import org.mule.runtime.api.component.ComponentIdentifier;
+import org.mule.runtime.api.dsl.DslResolvingContext;
+import org.mule.runtime.api.meta.NamedObject;
+import org.mule.runtime.api.meta.model.ExtensionModel;
+import org.mule.runtime.api.meta.model.parameter.ParameterizedModel;
+import org.mule.runtime.app.declaration.api.ArtifactDeclaration;
+import org.mule.runtime.app.declaration.api.ElementDeclaration;
+import org.mule.runtime.config.api.dsl.model.DslElementModel;
+import org.mule.runtime.config.api.dsl.model.DslElementModelFactory;
+import org.mule.runtime.config.api.dsl.processor.ArtifactConfig;
+import org.mule.runtime.config.api.dsl.processor.ConfigFile;
+import org.mule.runtime.config.api.dsl.processor.ConfigLine;
+import org.mule.runtime.config.api.dsl.processor.xml.XmlApplicationParser;
+import org.mule.runtime.config.api.dsl.processor.xml.XmlApplicationServiceRegistry;
+import org.mule.runtime.config.internal.model.ApplicationModel;
+import org.mule.runtime.core.api.extension.MuleExtensionModelProvider;
+import org.mule.runtime.core.api.registry.SpiServiceRegistry;
+import org.mule.runtime.dsl.api.component.config.ComponentConfiguration;
+import org.mule.runtime.dsl.internal.ClassLoaderResourceProvider;
+import org.mule.test.runner.ArtifactClassLoaderRunnerConfig;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+
+import com.google.common.collect.ImmutableSet;
 
 @ArtifactClassLoaderRunnerConfig(applicationSharedRuntimeLibs = {"org.apache.derby:derby", "org.apache.activemq:activemq-client",
     "org.apache.activemq:activemq-broker", "org.apache.activemq:activemq-kahadb-store"})
@@ -180,7 +183,7 @@ public abstract class AbstractElementModelTestCase extends MuleArtifactFunctiona
         .build();
 
     return new ApplicationModel(artifactConfig, new ArtifactDeclaration(),
-                                uri -> muleContext.getExecutionClassLoader().getResourceAsStream(uri));
+                                new ClassLoaderResourceProvider(muleContext.getExecutionClassLoader()));
   }
 
   protected String write() throws Exception {
