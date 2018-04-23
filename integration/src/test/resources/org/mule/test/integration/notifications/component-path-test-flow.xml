@@ -145,4 +145,33 @@
         </aggregators:size-based-aggregator>
     </flow>
 
+    <flow name="mainFlowForDynamicSubflowTesting">
+        <flow-ref name="#[vars.subflows[0]]"/>
+    </flow>
+
+    <sub-flow name="subA">
+        <flow-ref name="#[vars.subflows[1]]"/>
+    </sub-flow>
+
+    <sub-flow name="subB">
+        <flow-ref name="#[vars.subflows[1]]"/>
+    </sub-flow>
+
+    <sub-flow name="subX">
+        <flow-ref name="#[vars.subflows[2]]"/>
+    </sub-flow>
+
+    <sub-flow name="subY">
+        <flow-ref name="#[vars.subflows[2]]"/>
+    </sub-flow>
+
+    <sub-flow name="subO">
+        <logger/>
+    </sub-flow>
+
+    <sub-flow name="subP">
+       <logger/>
+    </sub-flow>
+
+
 </mule>

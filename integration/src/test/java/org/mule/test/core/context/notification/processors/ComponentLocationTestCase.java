@@ -10,6 +10,7 @@ import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
+import static java.util.stream.Collectors.toList;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
@@ -31,6 +32,7 @@ import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocator
 import org.mule.functional.api.flow.FlowRunner;
 import org.mule.runtime.api.component.Component;
 import org.mule.runtime.api.component.TypedComponentIdentifier;
+import org.mule.runtime.api.component.location.ComponentLocation;
 import org.mule.runtime.api.component.location.ConfigurationComponentLocator;
 import org.mule.runtime.api.component.location.Location;
 import org.mule.runtime.api.notification.MessageProcessorNotification;
@@ -45,9 +47,11 @@ import org.mule.test.AbstractIntegrationTestCase;
 import org.junit.Test;
 
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
+import java.util.function.Consumer;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -149,6 +153,13 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
                                                                   FLOW_TYPED_COMPONENT_IDENTIFIER,
                                                                   CONFIG_FILE_NAME,
                                                                   of(136))));
+
+  private static final DefaultComponentLocation FLOW_WITH_NESTED_SUBFLOWS =
+      new DefaultComponentLocation(of("mainFlowForDynamicSubflowTesting"),
+                                   asList(new DefaultLocationPart("mainFlowForDynamicSubflowTesting",
+                                                                  FLOW_TYPED_COMPONENT_IDENTIFIER,
+                                                                  CONFIG_FILE_NAME,
+                                                                  of(148))));
 
   private static final Optional<TypedComponentIdentifier> LOGGER =
       of(builder().identifier(buildFromStringRepresentation("mule:logger"))
@@ -327,6 +338,88 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
                             of(82)));
     assertNoNextProcessorNotification();
   }
+
+  @Test
+  public void nestedSubFlows() throws Exception {
+    List<DefaultComponentLocation> level1 = asList(
+                                                   new DefaultComponentLocation(of("subA"),
+                                                                                asList(new DefaultLocationPart("subA",
+                                                                                                               SUB_FLOW_TYPED_COMPONENT_IDENTIFIER,
+                                                                                                               CONFIG_FILE_NAME,
+                                                                                                               of(152)))),
+                                                   new DefaultComponentLocation(of("subB"),
+                                                                                asList(new DefaultLocationPart("subB",
+                                                                                                               SUB_FLOW_TYPED_COMPONENT_IDENTIFIER,
+                                                                                                               CONFIG_FILE_NAME,
+                                                                                                               of(156)))));
+    List<DefaultComponentLocation> level2 = asList(
+                                                   new DefaultComponentLocation(of("subX"),
+                                                                                asList(new DefaultLocationPart("subX",
+                                                                                                               SUB_FLOW_TYPED_COMPONENT_IDENTIFIER,
+                                                                                                               CONFIG_FILE_NAME,
+                                                                                                               of(160)))),
+                                                   new DefaultComponentLocation(of("subY"),
+                                                                                asList(new DefaultLocationPart("subY",
+                                                                                                               SUB_FLOW_TYPED_COMPONENT_IDENTIFIER,
+                                                                                                               CONFIG_FILE_NAME,
+                                                                                                               of(164)))));
+    List<DefaultComponentLocation> level3 = asList(
+                                                   new DefaultComponentLocation(of("subO"),
+                                                                                asList(new DefaultLocationPart("subO",
+                                                                                                               SUB_FLOW_TYPED_COMPONENT_IDENTIFIER,
+                                                                                                               CONFIG_FILE_NAME,
+                                                                                                               of(168)))),
+                                                   new DefaultComponentLocation(of("subP"),
+                                                                                asList(new DefaultLocationPart("subP",
+                                                                                                               SUB_FLOW_TYPED_COMPONENT_IDENTIFIER,
+                                                                                                               CONFIG_FILE_NAME,
+                                                                                                               of(172)))));
+    String mainFlowName = "mainFlowForDynamicSubflowTesting";
+    runForEveryPathCombination(asList(level1, level2, level3), combination -> {
+      try {
+        flowRunner(mainFlowName).withVariable("subflows",
+                                              combination.stream().map(DefaultComponentLocation::getName).collect(toList()))
+            .run();
+        DefaultComponentLocation flowWithSubflow = FLOW_WITH_NESTED_SUBFLOWS.appendProcessorsPart();
+        assertNextProcessorLocationIs(flowWithSubflow.appendLocationPart("0", FLOW_REF, CONFIG_FILE_NAME, of(149)));
+        DefaultComponentLocation currentLocation;
+        for (int i = 0; i < combination.size() - 1; i++) {
+          currentLocation = combination.get(i);
+          assertNextProcessorLocationIs(currentLocation.appendProcessorsPart()
+              .appendLocationPart("0", FLOW_REF, CONFIG_FILE_NAME, of(currentLocation.getLineInFile().get() + 1)));
+        }
+        currentLocation = combination.get(combination.size() - 1);
+        assertNextProcessorLocationIs(currentLocation.appendProcessorsPart()
+            .appendLocationPart("0", LOGGER, CONFIG_FILE_NAME, of(currentLocation.getLineInFile().get() + 1)));
+      } catch (Exception e) {
+        fail();
+      }
+    });
+
+  }
+
+  private void runForEveryPathCombination(List<List<DefaultComponentLocation>> levels,
+                                          Consumer<List<DefaultComponentLocation>> func) {
+    runForEveryPathCombination(levels, new LinkedList<>(), 0, func);
+  }
+
+  private void runForEveryPathCombination(List<List<DefaultComponentLocation>> levels,
+                                          List<DefaultComponentLocation> previousLevels, int currentLevelIndex,
+                                          Consumer<List<DefaultComponentLocation>> func) {
+
+    if (currentLevelIndex == levels.size()) {
+      func.accept(previousLevels);
+      return;
+    }
+
+    for (DefaultComponentLocation levelRelativePath : levels.get(currentLevelIndex)) {
+      List<DefaultComponentLocation> tmpCombination = new LinkedList<>(previousLevels);
+      tmpCombination.add(levelRelativePath);
+      runForEveryPathCombination(levels, tmpCombination, currentLevelIndex + 1, func);
+    }
+
+  }
+
 
   @Test
   public void flowWithScatterGather() throws Exception {
