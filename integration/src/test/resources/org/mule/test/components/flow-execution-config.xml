@@ -1,14 +1,60 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns:test="http://www.mulesoft.org/schema/mule/test"
+      xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xmlns:oauth="http://www.mulesoft.org/schema/mule/oauth"
       xsi:schemaLocation="
+       http://www.mulesoft.org/schema/mule/oauth http://www.mulesoft.org/schema/mule/oauth/current/mule-oauth.xsd
+       http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
 
+    <http:request-config name="requestConfig">
+        <http:request-connection host="localhost" port="${oauth.server.port}">
+            <http:proxy-config>
+                <http:proxy host="resolvedProxyHost" port="${proxyPort}"/>
+            </http:proxy-config>
+            <http:authentication>
+                <oauth:client-credentials-grant-type
+                        clientId="${client.id}"
+                        clientSecret="${client.secret}"
+                        tokenManager="tokenManagerConfig"
+                        tokenUrl="${token.url}">
+                </oauth:client-credentials-grant-type>
+            </http:authentication>
+        </http:request-connection>
+    </http:request-config>
+
+
     <flow name="flow">
+        <http:listener config-ref="httpProxyConf" path="/*" responseStreamingMode="AUTO">
+            <http:response statusCode="#[attributes.statusCode]" reasonPhrase="#[attributes.reasonPhrase]">
+                <http:headers>#[attributes.headers]</http:headers>
+            </http:response>
+            <http:error-response>
+                <http:headers>#[attributes.headers]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <scatter-gather>
+            <route>
+                <parse-template>
+                    <content>#['lala']</content>
+                </parse-template>
+            </route>
+            <route>
+                <parse-template>
+                    <content>#['lala']</content>
+                </parse-template>
+            </route>
+        </scatter-gather>
         <set-payload value="#[payload + vars.myVar]"/>
     </flow>
 
     <flow name="flowWithErrorContinue">
+        <scheduler>
+            <scheduling-strategy>
+                <fixed-frequency frequency="10"/>
+            </scheduling-strategy>
+        </scheduler>
         <test:throw exception="java.lang.IllegalStateException" error="EXPRESSION"/>
         <error-handler>
             <on-error-continue type="EXPRESSION">
