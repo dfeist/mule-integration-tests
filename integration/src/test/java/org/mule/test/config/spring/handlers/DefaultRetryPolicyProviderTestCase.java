@@ -13,6 +13,8 @@ import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.core.api.config.MuleProperties.OBJECT_DEFAULT_RETRY_POLICY_TEMPLATE;
 
+import org.mule.runtime.core.api.retry.async.AsynchronousRetryTemplate;
+import org.mule.runtime.core.api.retry.policy.RetryPolicyTemplate;
 import org.mule.runtime.core.api.retry.policy.SimpleRetryPolicyTemplate;
 import org.mule.test.AbstractIntegrationTestCase;
 
@@ -29,7 +31,9 @@ public class DefaultRetryPolicyProviderTestCase extends AbstractIntegrationTestC
   public void testPolicyRegistration() throws Exception {
     Object obj = registry.lookupByName(OBJECT_DEFAULT_RETRY_POLICY_TEMPLATE).get();
     assertThat(obj, not(nullValue()));
-    assertThat(obj, instanceOf(SimpleRetryPolicyTemplate.class));
-    assertThat(((SimpleRetryPolicyTemplate) obj).getCount(), is(3));
+    assertThat(obj, instanceOf(AsynchronousRetryTemplate.class));
+    RetryPolicyTemplate delegate = ((AsynchronousRetryTemplate) obj).getDelegate();
+    assertThat(delegate, instanceOf(SimpleRetryPolicyTemplate.class));
+    assertThat(((SimpleRetryPolicyTemplate) delegate).getCount(), is(3));
   }
 }
