@@ -14,23 +14,35 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.component.ComponentIdentifier.buildFromStringRepresentation;
+import static org.mule.runtime.api.component.TypedComponentIdentifier.builder;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.FLOW;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.OPERATION;
-import static org.mule.runtime.api.component.TypedComponentIdentifier.builder;
 import static org.mule.runtime.api.dsl.DslResolvingContext.getDefault;
 import static org.mule.runtime.api.util.collection.Collectors.toImmutableList;
 import static org.mule.runtime.config.api.XmlConfigurationDocumentLoader.noValidationDocumentLoader;
 import static org.mule.runtime.config.api.dsl.CoreDslConstants.FLOW_IDENTIFIER;
 import static org.mule.runtime.core.api.lifecycle.LifecycleUtils.initialiseIfNeeded;
 import static org.mule.runtime.module.extension.api.util.MuleExtensionUtils.createDefaultExtensionManager;
+
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+
+import org.junit.Test;
+
+import org.mule.runtime.api.artifact.ast.ArtifactAst;
 import org.mule.runtime.api.component.TypedComponentIdentifier;
 import org.mule.runtime.api.component.location.ComponentLocation;
 import org.mule.runtime.api.component.location.Location;
 import org.mule.runtime.api.dsl.DslResolvingContext;
 import org.mule.runtime.api.meta.model.ExtensionModel;
 import org.mule.runtime.api.notification.MessageProcessorNotification;
-import org.mule.runtime.config.api.dsl.processor.ArtifactConfig;
-import org.mule.runtime.config.api.dsl.processor.ConfigFile;
 import org.mule.runtime.config.api.dsl.processor.ConfigLine;
 import org.mule.runtime.config.api.dsl.processor.xml.XmlApplicationParser;
 import org.mule.runtime.config.api.dsl.xml.StaticXmlNamespaceInfo;
@@ -41,6 +53,7 @@ import org.mule.runtime.core.api.config.ConfigurationBuilder;
 import org.mule.runtime.core.api.config.builders.AbstractConfigurationBuilder;
 import org.mule.runtime.core.api.extension.ExtensionManager;
 import org.mule.runtime.core.api.registry.SpiServiceRegistry;
+import org.mule.runtime.core.internal.artifact.ast.ArtifactXmlBasedAstBuilder;
 import org.mule.runtime.dsl.api.component.config.DefaultComponentLocation;
 import org.mule.runtime.dsl.api.component.config.DefaultComponentLocation.DefaultLocationPart;
 import org.mule.runtime.dsl.api.xml.XmlNamespaceInfo;
@@ -48,18 +61,10 @@ import org.mule.runtime.dsl.api.xml.XmlNamespaceInfoProvider;
 import org.mule.runtime.extension.api.loader.xml.XmlExtensionModelLoader;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import com.google.common.collect.ImmutableList;
+import org.w3c.dom.Document;
 
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 
 import io.qameta.allure.junit4.DisplayName;
 
@@ -250,15 +255,12 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
   public void validateComponentLocationCreatedFromExtensionModelsWithoutUsingParsers() throws Exception {
     final Set<ExtensionModel> extensionModels = muleContext.getExtensionManager().getExtensions();
 
-    ArtifactConfig.Builder artifactConfigBuilder = new ArtifactConfig.Builder();
-    artifactConfigBuilder.addConfigFile(new ConfigFile(CONFIG_FILE_NAME.get(), Collections
-        .singletonList(loadConfigLines(extensionModels,
-                                       this.getClass().getClassLoader().getResourceAsStream(CONFIG_FILE_NAME.get()))
-                                           .orElseThrow(() -> new IllegalArgumentException(String
-                                               .format("Failed to parse %s.", CONFIG_FILE_NAME.get()))))));
+    ArtifactAst artifactAst = ArtifactXmlBasedAstBuilder.builder()
+        .setClassLoader(Thread.currentThread().getContextClassLoader())
+        .setConfigFiles(ImmutableSet.of(CONFIG_FILE_NAME.get()))
+        .build();
 
-
-    ApplicationModel toolingApplicationModel = new ApplicationModel(artifactConfigBuilder.build(), null,
+    ApplicationModel toolingApplicationModel = new ApplicationModel(artifactAst, null,
                                                                     extensionModels, emptyMap(),
                                                                     empty(),
                                                                     empty(),

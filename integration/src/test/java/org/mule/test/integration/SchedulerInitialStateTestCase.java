@@ -17,6 +17,16 @@ import static org.mule.runtime.api.deployment.management.ComponentInitialStateMa
 import static org.mule.runtime.config.api.SpringXmlConfigurationBuilderFactory.createConfigurationBuilder;
 import static org.mule.test.allure.AllureConstants.SchedulerServiceFeature.SCHEDULER_SERVICE;
 import static org.mule.test.allure.AllureConstants.SchedulerServiceFeature.SchedulerServiceStory.SOURCE_MANAGEMENT;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import javax.inject.Inject;
+
+import org.junit.Test;
+import org.junit.runners.Parameterized;
+
 import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.runtime.api.component.Component;
 import org.mule.runtime.api.component.location.Location;
@@ -27,22 +37,17 @@ import org.mule.runtime.api.source.SchedulerMessageSource;
 import org.mule.runtime.config.api.LazyComponentInitializer;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.config.ConfigurationBuilder;
+import org.mule.runtime.core.internal.artifact.ast.ArtifactXmlBasedAstBuilder;
 import org.mule.tck.probe.PollingProber;
 import org.mule.tck.probe.Probe;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.test.runner.RunnerDelegateTo;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import javax.inject.Inject;
+import com.google.common.collect.ImmutableSet;
 
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
-import org.junit.Test;
-import org.junit.runners.Parameterized;
 
 @Feature(SCHEDULER_SERVICE)
 @Story(SOURCE_MANAGEMENT)
@@ -69,7 +74,14 @@ public class SchedulerInitialStateTestCase extends AbstractIntegrationTestCase {
 
   @Override
   protected ConfigurationBuilder getBuilder() throws Exception {
-    final ConfigurationBuilder configurationBuilder = createConfigurationBuilder(getConfigFile(), lazyInitEnabled);
+    final ConfigurationBuilder configurationBuilder = createConfigurationBuilder(
+                                                                                 ArtifactXmlBasedAstBuilder.builder()
+                                                                                     .setConfigFiles(ImmutableSet
+                                                                                         .of(getConfigFile()))
+                                                                                     .setClassLoader(Thread.currentThread()
+                                                                                         .getContextClassLoader())
+                                                                                     .build(),
+                                                                                 lazyInitEnabled);
     configureSpringXmlConfigurationBuilder(configurationBuilder);
     return configurationBuilder;
   }

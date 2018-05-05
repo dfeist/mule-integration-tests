@@ -8,11 +8,14 @@ package org.mule.properties;
 
 import static org.mule.runtime.config.api.SpringXmlConfigurationBuilderFactory.createConfigurationBuilder;
 
+import org.junit.Test;
+
 import org.mule.runtime.core.api.config.ConfigurationException;
 import org.mule.runtime.core.api.context.DefaultMuleContextFactory;
+import org.mule.runtime.core.internal.artifact.ast.ArtifactXmlBasedAstBuilder;
 import org.mule.tck.junit4.AbstractMuleTestCase;
 
-import org.junit.Test;
+import com.google.common.collect.ImmutableSet;
 
 public class InvalidSetVariableTestCase extends AbstractMuleTestCase {
 
@@ -21,6 +24,6 @@ public class InvalidSetVariableTestCase extends AbstractMuleTestCase {
   @Test(expected = ConfigurationException.class)
   public void emptyVariableNameValidatedBySchema() throws Exception {
     // TODO MULE-10061 - Review once the MuleContext lifecycle is clearly defined
-    new DefaultMuleContextFactory().createMuleContext(createConfigurationBuilder(muleConfigPath));
+    new DefaultMuleContextFactory().createMuleContext(createConfigurationBuilder(ArtifactXmlBasedAstBuilder.builder().setConfigFiles(ImmutableSet.of(muleConfigPath)).build()));
   }
 }

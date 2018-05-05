@@ -23,6 +23,18 @@ import static org.mule.runtime.config.api.SpringXmlConfigurationBuilderFactory.c
 import static org.mule.runtime.core.api.config.MuleProperties.OBJECT_SECURITY_MANAGER;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.CONFIGURATION_COMPONENT_LOCATOR;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.ConfigurationComponentLocatorStory.SEARCH_CONFIGURATION;
+<<<<<<< HEAD
+=======
+
+import java.util.List;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+
+import org.apache.commons.lang3.reflect.FieldUtils;
+import org.junit.Test;
+
+>>>>>>> sdf
 import org.mule.extension.spring.api.SpringConfig;
 import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.runtime.api.artifact.Registry;
@@ -32,6 +44,7 @@ import org.mule.runtime.api.component.location.Location;
 import org.mule.runtime.config.api.LazyComponentInitializer;
 import org.mule.runtime.core.api.config.ConfigurationBuilder;
 import org.mule.runtime.core.api.security.SecurityManager;
+import org.mule.runtime.core.internal.artifact.ast.ArtifactXmlBasedAstBuilder;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import java.util.List;
@@ -39,12 +52,11 @@ import java.util.Optional;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import com.google.common.collect.ImmutableSet;
 
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
-import org.apache.commons.lang3.reflect.FieldUtils;
-import org.junit.Test;
 
 @Feature(CONFIGURATION_COMPONENT_LOCATOR)
 @Story(SEARCH_CONFIGURATION)
@@ -74,7 +86,9 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
 
   @Override
   protected ConfigurationBuilder getBuilder() throws Exception {
-    final ConfigurationBuilder configurationBuilder = createConfigurationBuilder(getConfigFiles(), true);
+    final ConfigurationBuilder configurationBuilder =
+        createConfigurationBuilder(ArtifactXmlBasedAstBuilder.builder().setConfigFiles(ImmutableSet.of(getConfigFile())).build(),
+                                   true);
     configureSpringXmlConfigurationBuilder(configurationBuilder);
     return configurationBuilder;
   }
