@@ -24,7 +24,7 @@ import org.mule.runtime.api.config.custom.ServiceConfigurator;
 import org.mule.runtime.api.deployment.management.ComponentInitialStateManager;
 import org.mule.runtime.api.event.Event;
 import org.mule.runtime.api.source.SchedulerMessageSource;
-import org.mule.runtime.config.api.LazyComponentInitializer;
+import org.mule.runtime.core.api.config.LazyComponentInitializer;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.config.ConfigurationBuilder;
 import org.mule.tck.probe.PollingProber;
