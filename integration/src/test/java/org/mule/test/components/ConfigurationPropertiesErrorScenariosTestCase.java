@@ -11,15 +11,17 @@ import static org.mockito.Matchers.contains;
 import static org.mule.tck.MuleTestUtils.testWithSystemProperty;
 import static org.mule.test.allure.AllureConstants.ConfigurationProperties.CONFIGURATION_PROPERTIES;
 import static org.mule.test.allure.AllureConstants.ConfigurationProperties.ComponentConfigurationAttributesStory.COMPONENT_CONFIGURATION_ERROR_SCEANRIOS;
+
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+
 import org.mule.functional.junit4.ApplicationContextBuilder;
 import org.mule.tck.junit4.AbstractMuleTestCase;
 
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 @Feature(CONFIGURATION_PROPERTIES)
 @Story(COMPONENT_CONFIGURATION_ERROR_SCEANRIOS)
@@ -42,8 +44,7 @@ public class ConfigurationPropertiesErrorScenariosTestCase extends AbstractMuleT
   @Test
   public void nonExistentFileDefinedWithSystemProperty() throws Exception {
     testWithSystemProperty("env", "no-env", () -> {
-      expectedException
-          .expectMessage("Couldn't find configuration properties file no-env.properties neither on classpath or in file system");
+      expectedException.expectMessage("Couldn't find resource: no-env.properties");
       new ApplicationContextBuilder()
           .setApplicationResources(new String[] {"org/mule/test/components/customizable-configuration-properties-file.xml"})
           .build();
