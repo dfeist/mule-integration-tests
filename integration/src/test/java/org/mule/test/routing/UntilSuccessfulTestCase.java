@@ -15,10 +15,10 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mule.functional.api.component.FunctionalTestProcessor.getFromFlow;
 import static org.mule.functional.api.component.InvocationCountMessageProcessor.getNumberOfInvocationsFor;
-import static org.mule.functional.junit4.TestLegacyMessageUtils.getExceptionPayload;
 import static org.mule.functional.junit4.matchers.ThrowableCauseMatcher.hasCause;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.UntilSuccessfulStory.UNTIL_SUCCESSFUL;
+
 import org.mule.functional.api.component.FunctionalTestProcessor;
 import org.mule.functional.api.exception.FunctionalTestException;
 import org.mule.runtime.api.exception.MuleException;
@@ -31,15 +31,16 @@ import org.mule.tck.probe.JUnitLambdaProbe;
 import org.mule.tck.probe.PollingProber;
 import org.mule.test.AbstractIntegrationTestCase;
 
+import org.apache.commons.lang3.RandomStringUtils;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
-import org.apache.commons.lang3.RandomStringUtils;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 @Feature(ROUTERS)
 @Story(UNTIL_SUCCESSFUL)
@@ -93,14 +94,14 @@ public class UntilSuccessfulTestCase extends AbstractIntegrationTestCase {
 
     ponderUntilMessageCountReceivedByCustomMP(1);
 
-    Throwable error = getExceptionPayload(CustomMP.getProcessedEvents().get(0).getMessage()).getException();
+    Throwable error = CustomMP.getProcessedEvents().get(0).getError().get().getCause();
     assertThat(error, is(notNullValue()));
-    assertThat(error.getCause(), instanceOf(RetryPolicyExhaustedException.class));
-    assertThat(error.getCause().getMessage(),
+    assertThat(error, instanceOf(RetryPolicyExhaustedException.class));
+    assertThat(error.getMessage(),
                containsString("'until-successful' retries exhausted. Last exception message was: Value was expected to be true but it was false instead"));
 
-    assertThat(error.getCause().getCause(), instanceOf(MuleRuntimeException.class));
-    assertThat(error.getCause().getMessage(),
+    assertThat(error.getCause(), instanceOf(MuleRuntimeException.class));
+    assertThat(error.getMessage(),
                containsString("Value was expected to be true but it was false instead"));
   }
 
