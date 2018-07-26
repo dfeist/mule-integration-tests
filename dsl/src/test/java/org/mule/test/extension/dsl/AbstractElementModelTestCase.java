@@ -49,8 +49,8 @@ import org.mule.runtime.config.api.dsl.processor.xml.XmlApplicationServiceRegist
 import org.mule.runtime.config.internal.model.ApplicationModel;
 import org.mule.runtime.core.api.extension.MuleExtensionModelProvider;
 import org.mule.runtime.core.api.registry.SpiServiceRegistry;
+import org.mule.runtime.core.internal.dsl.ClassLoaderResourceProvider;
 import org.mule.runtime.dsl.api.component.config.ComponentConfiguration;
-import org.mule.runtime.dsl.internal.ClassLoaderResourceProvider;
 import org.mule.test.runner.ArtifactClassLoaderRunnerConfig;
 
 import org.w3c.dom.Document;
@@ -184,7 +184,7 @@ public abstract class AbstractElementModelTestCase extends MuleArtifactFunctiona
         .build();
 
     return new ApplicationModel(artifactConfig, new ArtifactDeclaration(),
-                                new ResourceProviderAdapter(muleContext.getExecutionClassLoader()));
+                                new ResourceProviderAdapter(new ClassLoaderResourceProvider(muleContext.getExecutionClassLoader())));
   }
 
   protected String write() throws Exception {

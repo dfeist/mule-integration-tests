@@ -36,8 +36,8 @@ import org.mule.runtime.api.event.Event;
 import org.mule.runtime.api.source.SchedulerMessageSource;
 import org.mule.runtime.config.api.LazyComponentInitializer;
 import org.mule.runtime.core.api.MuleContext;
-import org.mule.runtime.core.api.artifact.dsl.xml.ArtifactXmlBasedAstBuilder;
 import org.mule.runtime.core.api.config.ConfigurationBuilder;
+import org.mule.runtime.core.api.dsl.xml.MuleArtifactXmlBasedAstBuilder;
 import org.mule.tck.probe.PollingProber;
 import org.mule.tck.probe.Probe;
 import org.mule.test.AbstractIntegrationTestCase;
@@ -75,11 +75,9 @@ public class SchedulerInitialStateTestCase extends AbstractIntegrationTestCase {
   @Override
   protected ConfigurationBuilder getBuilder() throws Exception {
     final ConfigurationBuilder configurationBuilder = createConfigurationBuilder(
-                                                                                 ArtifactXmlBasedAstBuilder.builder()
+                                                                                 MuleArtifactXmlBasedAstBuilder.builder()
                                                                                      .setConfigFiles(ImmutableSet
                                                                                          .of(getConfigFile()))
-                                                                                     .setClassLoader(Thread.currentThread()
-                                                                                         .getContextClassLoader())
                                                                                      .build(),
                                                                                  lazyInitEnabled);
     configureSpringXmlConfigurationBuilder(configurationBuilder);

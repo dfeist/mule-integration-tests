@@ -50,15 +50,17 @@ import org.mule.runtime.config.api.dsl.xml.StaticXmlNamespaceInfo;
 import org.mule.runtime.config.api.dsl.xml.StaticXmlNamespaceInfoProvider;
 import org.mule.runtime.config.internal.model.ApplicationModel;
 import org.mule.runtime.core.api.MuleContext;
-import org.mule.runtime.core.api.artifact.dsl.xml.ArtifactXmlBasedAstBuilder;
 import org.mule.runtime.core.api.config.ConfigurationBuilder;
 import org.mule.runtime.core.api.config.builders.AbstractConfigurationBuilder;
+import org.mule.runtime.core.api.dsl.xml.MuleArtifactXmlBasedAstBuilder;
 import org.mule.runtime.core.api.extension.ExtensionManager;
 import org.mule.runtime.core.api.registry.SpiServiceRegistry;
+import org.mule.runtime.core.internal.dsl.ClassLoaderResourceProvider;
 import org.mule.runtime.dsl.api.component.config.DefaultComponentLocation;
 import org.mule.runtime.dsl.api.component.config.DefaultComponentLocation.DefaultLocationPart;
 import org.mule.runtime.dsl.api.xml.XmlNamespaceInfo;
 import org.mule.runtime.dsl.api.xml.XmlNamespaceInfoProvider;
+import org.mule.runtime.dsl.xml.api.ArtifactXmlBasedAstBuilder;
 import org.mule.runtime.extension.api.loader.xml.XmlExtensionModelLoader;
 import org.mule.test.AbstractIntegrationTestCase;
 
@@ -252,85 +254,85 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
   public void validateComponentLocationCreatedFromExtensionModelsWithoutUsingParsers() throws Exception {
     final Set<ExtensionModel> extensionModels = muleContext.getExtensionManager().getExtensions();
 
-    ArtifactAst artifactAst = ArtifactXmlBasedAstBuilder.builder()
-        .setClassLoader(Thread.currentThread().getContextClassLoader())
+    ArtifactAst artifactAst = MuleArtifactXmlBasedAstBuilder.builder(extensionModels)
+        .setResourceProvider(new ClassLoaderResourceProvider(muleContext.getExecutionClassLoader()))
         .setConfigFiles(ImmutableSet.of(CONFIG_FILE_NAME.get()))
         .build();
-    //TODO fix
-    //ApplicationModel toolingApplicationModel = new ApplicationModel(artifactAst, null,
-    //                                                                extensionModels, emptyMap(),
-    //                                                                empty(),
-    //                                                                empty(),
-    //                                                                false,
-    //                                                                uri -> {
-    //                                                                  throw new UnsupportedOperationException();
-    //                                                                });
+    // TODO fix
+    // ApplicationModel toolingApplicationModel = new ApplicationModel(artifactAst, null,
+    // extensionModels, emptyMap(),
+    // empty(),
+    // empty(),
+    // false,
+    // uri -> {
+    // throw new UnsupportedOperationException();
+    // });
     //
-    //List<String> componentLocations = new ArrayList<>();
-    //toolingApplicationModel.executeOnEveryComponentTree(componentModel -> {
-    //  final String componentIdentifierName = componentModel.getIdentifier().getName();
-    //  if (componentIdentifierName.equals("notification") || componentIdentifierName.equals("notifications")) {
-    //    return;
-    //  }
-    //  final ComponentLocation componentLocation = componentModel.getComponentLocation();
-    //  if (componentLocation != null) {
-    //    componentLocations.add(componentLocation.getLocation());
-    //  }
-    //});
+    // List<String> componentLocations = new ArrayList<>();
+    // toolingApplicationModel.executeOnEveryComponentTree(componentModel -> {
+    // final String componentIdentifierName = componentModel.getIdentifier().getName();
+    // if (componentIdentifierName.equals("notification") || componentIdentifierName.equals("notifications")) {
+    // return;
+    // }
+    // final ComponentLocation componentLocation = componentModel.getComponentLocation();
+    // if (componentLocation != null) {
+    // componentLocations.add(componentLocation.getLocation());
+    // }
+    // });
     //
-    //assertEquals(ImmutableList.builder()
-    //    .add(Location.builder().globalName(FLOW_WITH_SINGLE_MP_NAME).build().toString())
-    //    .add(Location.builder().globalName(FLOW_WITH_SINGLE_MP_NAME).addProcessorsPart().addIndexPart(0).build().toString())
+    // assertEquals(ImmutableList.builder()
+    // .add(Location.builder().globalName(FLOW_WITH_SINGLE_MP_NAME).build().toString())
+    // .add(Location.builder().globalName(FLOW_WITH_SINGLE_MP_NAME).addProcessorsPart().addIndexPart(0).build().toString())
     //
-    //    .add(Location.builder().globalName(FLOW_WITH_SET_PAYLOAD_HARDCODED_NAME).build().toString())
-    //    .add(Location.builder().globalName(FLOW_WITH_SET_PAYLOAD_HARDCODED_NAME).addProcessorsPart().addIndexPart(0).build()
-    //        .toString())
+    // .add(Location.builder().globalName(FLOW_WITH_SET_PAYLOAD_HARDCODED_NAME).build().toString())
+    // .add(Location.builder().globalName(FLOW_WITH_SET_PAYLOAD_HARDCODED_NAME).addProcessorsPart().addIndexPart(0).build()
+    // .toString())
     //
-    //    .add(Location.builder().globalName(FLOW_WITH_SET_PAYLOAD_HARDCODED_TWICE_NAME).build().toString())
-    //    .add(Location.builder().globalName(FLOW_WITH_SET_PAYLOAD_HARDCODED_TWICE_NAME).addProcessorsPart().addIndexPart(0).build()
-    //        .toString())
-    //    .add(Location.builder().globalName(FLOW_WITH_SET_PAYLOAD_HARDCODED_TWICE_NAME).addProcessorsPart().addIndexPart(1).build()
-    //        .toString())
+    // .add(Location.builder().globalName(FLOW_WITH_SET_PAYLOAD_HARDCODED_TWICE_NAME).build().toString())
+    // .add(Location.builder().globalName(FLOW_WITH_SET_PAYLOAD_HARDCODED_TWICE_NAME).addProcessorsPart().addIndexPart(0).build()
+    // .toString())
+    // .add(Location.builder().globalName(FLOW_WITH_SET_PAYLOAD_HARDCODED_TWICE_NAME).addProcessorsPart().addIndexPart(1).build()
+    // .toString())
     //
-    //    .add(Location.builder().globalName(FLOW_WITH_SET_PAYLOAD_PARAM_VALUE_NAME).build().toString())
-    //    .add(Location.builder().globalName(FLOW_WITH_SET_PAYLOAD_PARAM_VALUE_NAME).addProcessorsPart().addIndexPart(0).build()
-    //        .toString())
+    // .add(Location.builder().globalName(FLOW_WITH_SET_PAYLOAD_PARAM_VALUE_NAME).build().toString())
+    // .add(Location.builder().globalName(FLOW_WITH_SET_PAYLOAD_PARAM_VALUE_NAME).addProcessorsPart().addIndexPart(0).build()
+    // .toString())
     //
-    //    .add(Location.builder().globalName(FLOW_WITH_SET_PAYLOAD_TWO_TIMES_NAME).build().toString())
-    //    .add(Location.builder().globalName(FLOW_WITH_SET_PAYLOAD_TWO_TIMES_NAME).addProcessorsPart().addIndexPart(0).build()
-    //        .toString())
+    // .add(Location.builder().globalName(FLOW_WITH_SET_PAYLOAD_TWO_TIMES_NAME).build().toString())
+    // .add(Location.builder().globalName(FLOW_WITH_SET_PAYLOAD_TWO_TIMES_NAME).addProcessorsPart().addIndexPart(0).build()
+    // .toString())
     //
-    //    .add(Location.builder().globalName(FLOW_WITH_SET_PAYLOAD_TWO_TIMES_TWICE_NAME).build().toString())
-    //    .add(Location.builder().globalName(FLOW_WITH_SET_PAYLOAD_TWO_TIMES_TWICE_NAME).addProcessorsPart().addIndexPart(0).build()
-    //        .toString())
-    //    .add(Location.builder().globalName(FLOW_WITH_SET_PAYLOAD_TWO_TIMES_TWICE_NAME).addProcessorsPart().addIndexPart(1).build()
-    //        .toString())
+    // .add(Location.builder().globalName(FLOW_WITH_SET_PAYLOAD_TWO_TIMES_TWICE_NAME).build().toString())
+    // .add(Location.builder().globalName(FLOW_WITH_SET_PAYLOAD_TWO_TIMES_TWICE_NAME).addProcessorsPart().addIndexPart(0).build()
+    // .toString())
+    // .add(Location.builder().globalName(FLOW_WITH_SET_PAYLOAD_TWO_TIMES_TWICE_NAME).addProcessorsPart().addIndexPart(1).build()
+    // .toString())
     //
-    //    .add(Location.builder().globalName(FLOW_WITH_PROXY_SET_PAYLOAD_HARDCODED_NAME).build().toString())
-    //    .add(Location.builder().globalName(FLOW_WITH_PROXY_SET_PAYLOAD_HARDCODED_NAME).addProcessorsPart().addIndexPart(0).build()
-    //        .toString())
+    // .add(Location.builder().globalName(FLOW_WITH_PROXY_SET_PAYLOAD_HARDCODED_NAME).build().toString())
+    // .add(Location.builder().globalName(FLOW_WITH_PROXY_SET_PAYLOAD_HARDCODED_NAME).addProcessorsPart().addIndexPart(0).build()
+    // .toString())
     //
     //
-    //    .add(Location.builder().globalName(FLOW_WITH_PROXY_SET_PAYLOAD_HARDCODED_AND_LOGGER_NAME).build().toString())
-    //    .add(Location.builder().globalName(FLOW_WITH_PROXY_SET_PAYLOAD_HARDCODED_AND_LOGGER_NAME).addProcessorsPart()
-    //        .addIndexPart(0).build().toString())
+    // .add(Location.builder().globalName(FLOW_WITH_PROXY_SET_PAYLOAD_HARDCODED_AND_LOGGER_NAME).build().toString())
+    // .add(Location.builder().globalName(FLOW_WITH_PROXY_SET_PAYLOAD_HARDCODED_AND_LOGGER_NAME).addProcessorsPart()
+    // .addIndexPart(0).build().toString())
     //
-    //    .add(Location.builder().globalName(FLOW_WITH_PROXY_AND_SIMPLE_MODULE_AND_LOGGER_NAME).build().toString())
-    //    .add(Location.builder().globalName(FLOW_WITH_PROXY_AND_SIMPLE_MODULE_AND_LOGGER_NAME).addProcessorsPart().addIndexPart(0)
-    //        .build().toString())
-    //    .add(Location.builder().globalName(FLOW_WITH_PROXY_AND_SIMPLE_MODULE_AND_LOGGER_NAME).addProcessorsPart().addIndexPart(1)
-    //        .build().toString())
-    //    .add(Location.builder().globalName(FLOW_WITH_PROXY_AND_SIMPLE_MODULE_AND_LOGGER_NAME).addProcessorsPart().addIndexPart(2)
-    //        .build().toString())
+    // .add(Location.builder().globalName(FLOW_WITH_PROXY_AND_SIMPLE_MODULE_AND_LOGGER_NAME).build().toString())
+    // .add(Location.builder().globalName(FLOW_WITH_PROXY_AND_SIMPLE_MODULE_AND_LOGGER_NAME).addProcessorsPart().addIndexPart(0)
+    // .build().toString())
+    // .add(Location.builder().globalName(FLOW_WITH_PROXY_AND_SIMPLE_MODULE_AND_LOGGER_NAME).addProcessorsPart().addIndexPart(1)
+    // .build().toString())
+    // .add(Location.builder().globalName(FLOW_WITH_PROXY_AND_SIMPLE_MODULE_AND_LOGGER_NAME).addProcessorsPart().addIndexPart(2)
+    // .build().toString())
     //
-    //    .add(Location.builder().globalName(FLOW_WITH_PROXY_AND_SIMPLE_MODULE_AND_LOGGER_REVERSE_NAME).build().toString())
-    //    .add(Location.builder().globalName(FLOW_WITH_PROXY_AND_SIMPLE_MODULE_AND_LOGGER_REVERSE_NAME).addProcessorsPart()
-    //        .addIndexPart(0).build().toString())
-    //    .add(Location.builder().globalName(FLOW_WITH_PROXY_AND_SIMPLE_MODULE_AND_LOGGER_REVERSE_NAME).addProcessorsPart()
-    //        .addIndexPart(1).build().toString())
-    //    .add(Location.builder().globalName(FLOW_WITH_PROXY_AND_SIMPLE_MODULE_AND_LOGGER_REVERSE_NAME).addProcessorsPart()
-    //        .addIndexPart(2).build().toString())
-    //    .build(), componentLocations);
+    // .add(Location.builder().globalName(FLOW_WITH_PROXY_AND_SIMPLE_MODULE_AND_LOGGER_REVERSE_NAME).build().toString())
+    // .add(Location.builder().globalName(FLOW_WITH_PROXY_AND_SIMPLE_MODULE_AND_LOGGER_REVERSE_NAME).addProcessorsPart()
+    // .addIndexPart(0).build().toString())
+    // .add(Location.builder().globalName(FLOW_WITH_PROXY_AND_SIMPLE_MODULE_AND_LOGGER_REVERSE_NAME).addProcessorsPart()
+    // .addIndexPart(1).build().toString())
+    // .add(Location.builder().globalName(FLOW_WITH_PROXY_AND_SIMPLE_MODULE_AND_LOGGER_REVERSE_NAME).addProcessorsPart()
+    // .addIndexPart(2).build().toString())
+    // .build(), componentLocations);
   }
 
   @Test

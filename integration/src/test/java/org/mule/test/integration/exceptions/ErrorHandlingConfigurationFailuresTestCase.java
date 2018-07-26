@@ -53,7 +53,6 @@ import org.mule.runtime.api.notification.IntegerAction;
 import org.mule.runtime.api.notification.NotificationListenerRegistry;
 import org.mule.runtime.api.util.concurrent.Latch;
 import org.mule.runtime.core.api.MuleContext;
-import org.mule.runtime.core.api.artifact.dsl.xml.ArtifactXmlBasedAstBuilder;
 import org.mule.runtime.core.api.config.ConfigurationBuilder;
 import org.mule.runtime.core.api.config.ConfigurationException;
 import org.mule.runtime.core.api.config.DefaultMuleConfiguration;
@@ -63,6 +62,8 @@ import org.mule.runtime.core.api.context.MuleContextBuilder;
 import org.mule.runtime.core.api.context.MuleContextFactory;
 import org.mule.runtime.core.api.context.notification.MuleContextNotification;
 import org.mule.runtime.core.api.context.notification.MuleContextNotificationListener;
+import org.mule.runtime.core.api.dsl.xml.MuleArtifactXmlBasedAstBuilder;
+import org.mule.runtime.dsl.xml.api.ArtifactXmlBasedAstBuilder;
 import org.mule.runtime.module.extension.api.loader.java.DefaultJavaExtensionModelLoader;
 import org.mule.runtime.module.extension.internal.manager.DefaultExtensionManager;
 import org.mule.tck.config.TestServicesConfigurationBuilder;
@@ -264,8 +265,7 @@ public class ErrorHandlingConfigurationFailuresTestCase extends AbstractMuleTest
         muleContext.setExtensionManager(defaultExtensionManager);
       }
     });
-    builders.add(createConfigurationBuilder(ArtifactXmlBasedAstBuilder.builder()
-        .setClassLoader(Thread.currentThread().getContextClassLoader())
+    builders.add(createConfigurationBuilder(MuleArtifactXmlBasedAstBuilder.builder()
         .setConfigFiles(ImmutableSet.of(configuration))
         .build()));
     builders.add(new TestServicesConfigurationBuilder());

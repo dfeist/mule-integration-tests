@@ -40,10 +40,9 @@ import org.mule.runtime.api.component.Component;
 import org.mule.runtime.api.component.location.ComponentLocation;
 import org.mule.runtime.api.component.location.Location;
 import org.mule.runtime.config.api.LazyComponentInitializer;
-import org.mule.runtime.core.api.artifact.dsl.xml.ArtifactXmlBasedAstBuilder;
 import org.mule.runtime.core.api.config.ConfigurationBuilder;
+import org.mule.runtime.core.api.dsl.xml.MuleArtifactXmlBasedAstBuilder;
 import org.mule.runtime.core.api.security.SecurityManager;
-import org.mule.runtime.core.internal.artifact.ast.ArtifactXmlBasedAstBuilder;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import com.google.common.collect.ImmutableSet;
@@ -81,7 +80,8 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
   @Override
   protected ConfigurationBuilder getBuilder() throws Exception {
     final ConfigurationBuilder configurationBuilder =
-        createConfigurationBuilder(ArtifactXmlBasedAstBuilder.builder().setConfigFiles(ImmutableSet.of(getConfigFile())).build(),
+        createConfigurationBuilder(MuleArtifactXmlBasedAstBuilder.builder().setConfigFiles(ImmutableSet.of(getConfigFile()))
+            .build(),
                                    true);
     configureSpringXmlConfigurationBuilder(configurationBuilder);
     return configurationBuilder;
