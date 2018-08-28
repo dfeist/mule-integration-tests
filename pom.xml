@@ -19,7 +19,7 @@
     <module>soap-connect</module>
     <module>oauth</module>
     <module>schedulers-tests</module>
-    <module>mule-test-smart-connectors-parent</module>
+    <!--<module>mule-test-smart-connectors-parent</module>-->
     <module>munit-tests</module>
     <module>extensions-xml-support</module>
     <module>logging</module>
