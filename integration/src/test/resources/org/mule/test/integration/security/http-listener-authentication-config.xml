@@ -3,12 +3,14 @@
       xmlns:http="http://www.mulesoft.org/schema/mule/http"
       xmlns:test="http://www.mulesoft.org/schema/mule/test"
       xmlns:spring="http://www.mulesoft.org/schema/mule/spring"
+      xmlns:heisenberg="http://www.mulesoft.org/schema/mule/heisenberg"
       xmlns="http://www.mulesoft.org/schema/mule/core"
       xsi:schemaLocation="
         http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
         http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
         http://www.mulesoft.org/schema/mule/spring http://www.mulesoft.org/schema/mule/spring/current/mule-spring.xsd
-        http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
+        http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
+http://www.mulesoft.org/schema/mule/heisenberg http://www.mulesoft.org/schema/mule/heisenberg/current/mule-heisenberg.xsd">
 
     <spring:config name="springConfig" files="org/mule/test/integration/security/http-listener-authentication-config-beans.xml"/>
 
@@ -16,6 +18,37 @@
         <spring:delegate-security-provider name="memory-provider" delegate-ref="authenticationManager"/>
     </spring:security-manager>
 
+    <http:request-config name="HTTP_Request_configuration"/>
+
+    <heisenberg:config name="heisenberg"
+                       myName="heisenberg"
+                       age="50"
+                       cancer="true"
+                       dateOfBirth="1959-09-07T00:00:00"
+                       dateOfDeath="2011-09-07T00:00:00-05:00"
+                       money="1000000"
+                       finalHealth="CANCER">
+        <heisenberg:enemies>
+            <heisenberg:enemy value="Gustavo Fring"/>
+            <heisenberg:enemy value="Hank"/>
+        </heisenberg:enemies>
+        <heisenberg:monthly-incomes>
+            <heisenberg:monthly-income value="12000"/>
+            <heisenberg:monthly-income value="500"/>
+        </heisenberg:monthly-incomes>
+        <heisenberg:next-door address="pollos hermanos" victim="Gustavo Fring">
+            <heisenberg:previous victim="Krazy-8" address="Jesse's"/>
+        </heisenberg:next-door>
+        <heisenberg:ricin-packs>
+            <heisenberg:ricin microgramsPerKilo="22">
+                <heisenberg:destination victim="Lidia" address="Stevia coffe shop"/>
+            </heisenberg:ricin>
+        </heisenberg:ricin-packs>
+        <heisenberg:known-addresses>
+            <heisenberg:known-address value="one address"/>
+        </heisenberg:known-addresses>
+        <heisenberg:inline-barber-preferences beardTrimming="MUSTACHE" fullyBald="false"/>
+    </heisenberg:config>
 
     <http:listener-config name="listenerConfigBasicAuth">
         <http:listener-connection host="localhost" port="${port}"/>
@@ -33,6 +66,17 @@
                 <test:queue name="security"/>
             </on-error-propagate>
         </error-handler>
+    </flow>
+
+    <flow name="dwMultiMap">
+        <http:listener config-ref="listenerConfigBasicAuth" path="/nope">
+            <http:response>
+                <http:headers>
+                    #[vars.aVar]
+                </http:headers>
+            </http:response>
+        </http:listener>
+        <heisenberg:get-phone-numbers config-ref="heisenberg" target="aVar"/>
     </flow>
 
 </mule>

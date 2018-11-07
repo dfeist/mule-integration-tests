@@ -18,12 +18,15 @@ import static org.mule.runtime.http.api.HttpHeaders.Names.WWW_AUTHENTICATE;
 import static org.mule.test.allure.AllureConstants.HttpFeature.HTTP_EXTENSION;
 import static org.mule.test.http.functional.matcher.HttpResponseReasonPhraseMatcher.hasReasonPhrase;
 import static org.mule.test.http.functional.matcher.HttpResponseStatusCodeMatcher.hasStatusCode;
-
 import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.runtime.core.api.util.IOUtils;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.AbstractIntegrationTestCase;
 
+import java.io.IOException;
+import java.util.Arrays;
+
+import io.qameta.allure.Feature;
 import org.apache.http.Header;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -36,10 +39,6 @@ import org.apache.http.impl.client.HttpClients;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
-
-import java.io.IOException;
-
-import io.qameta.allure.Feature;
 
 @Feature(HTTP_EXTENSION)
 public class HttpListenerAuthenticationTestCase extends AbstractIntegrationTestCase {
@@ -98,6 +97,14 @@ public class HttpListenerAuthenticationTestCase extends AbstractIntegrationTestC
     assertThat(httpResponse, hasReasonPhrase(INTERNAL_SERVER_ERROR.getReasonPhrase()));
     TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
     assertThat(queueHandler.read("basicAuthentication", RECEIVE_TIMEOUT).getMessage(), is(notNullValue()));
+  }
+
+  @Test
+  public void test() throws Exception {
+    HttpPost httpPost = new HttpPost(format("http://localhost:%s/nope", listenPort.getNumber()));
+    httpClient = HttpClients.custom().build();
+    httpResponse = httpClient.execute(httpPost);
+    System.out.println(Arrays.stream(httpResponse.getAllHeaders()).reduce("", (accum, header) -> accum + header.getName() + ":" + header.getValue(), (accum, header) -> accum));
   }
 
   private void getHttpResponse(CredentialsProvider credsProvider) throws IOException {
